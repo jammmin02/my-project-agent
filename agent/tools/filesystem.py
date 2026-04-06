@@ -140,7 +140,7 @@ class FileSystemToolset:
                     name = entry.name
 
                     # 너무 시끄러운 기본 제외 규칙
-                    if name in {".git", "__pycache__", ".pytest_cache", "node_modules", ".next", ".idea"}:
+                    if name in {".git", "__pycache__", ".pytest_cache", "node_modules", ".next", ".idea", ".venv", "venv"}:
                         continue
 
                     prefix = "  " * level
@@ -274,7 +274,7 @@ class FileSystemToolset:
                     if not p.is_file():
                         continue
 
-                    if any(part in {".git", "__pycache__", ".pytest_cache", "node_modules", ".next"} for part in p.parts):
+                    if any(part in {".git", "__pycache__", ".pytest_cache", "node_modules", ".next", ".venv", "venv"} for part in p.parts):
                         continue
 
                     if self.block_sensitive_files and self._is_sensitive(p):
