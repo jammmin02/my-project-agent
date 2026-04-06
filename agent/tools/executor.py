@@ -36,7 +36,7 @@ def execute_tool(
 
         if tool_name == "list_files":
             path = str(tool_input.get("path", "."))
-            depth = int(tool_input.get("depth", 2))
+            depth = int(tool_input.get("depth", 3))
             return registry.filesystem.list_files(path=path, depth=depth)
 
         if tool_name == "read_file":
