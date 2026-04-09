@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, Literal, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -24,7 +24,8 @@ class AgentDecision(BaseModel):
     """
     모델이 한 턴에서 반환해야 하는 구조화된 판단 결과.
 
-    Phase 4부터는 '툴 호출 여부'도 이 모델에 포함한다.
+    Phase 6부터는 읽기 툴뿐 아니라
+    파일 수정 툴까지 선택할 수 있어야 한다.
 
     설계 원칙:
     - 툴이 필요 없으면 tool_name=None, tool_input={}
@@ -45,7 +46,7 @@ class AgentDecision(BaseModel):
     )
 
     # 문제 해결 계획
-    plan: List[str] = Field(
+    plan: list[str] = Field(
         default_factory=list,
         description="문제를 해결하기 위한 구체적인 단계"
     )
@@ -76,16 +77,20 @@ class AgentDecision(BaseModel):
 
     # 실행할 툴 이름
     # 툴이 필요 없으면 None
-    tool_name: Optional[Literal["list_files", "read_file", "grep_code"]] = Field(
+    tool_name: Optional[
+        Literal[
+            "list_files",
+            "read_file",
+            "grep_code",
+            "replace_in_file",
+            "write_file",
+        ]
+    ] = Field(
         default=None,
         description="실행할 툴 이름. 필요 없으면 null"
     )
 
     # 툴 입력 인자
-    # 예:
-    # - {"path": ".", "depth": 2}
-    # - {"path": "agent/parser.py"}
-    # - {"query": "class ToolRegistry", "path": "."}
     tool_input: dict[str, Any] = Field(
         default_factory=dict,
         description="툴 실행 인자 딕셔너리"
@@ -97,7 +102,7 @@ class SessionState(BaseModel):
     대화 메시지 기록을 관리한다.
     """
 
-    messages: List[ChatMessage] = Field(default_factory=list)
+    messages: list[ChatMessage] = Field(default_factory=list)
 
     def add_user_message(self, content: str) -> None:
         """

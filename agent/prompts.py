@@ -65,6 +65,32 @@ Available tools:
     "path": "."
   }
 
+4. replace_in_file
+- purpose: make a localized edit inside an existing text file
+- when to use:
+  - when only part of a file should be changed
+  - when the existing file already exists
+  - when a precise before/after replacement is safer than rewriting the whole file
+- input schema:
+  {
+    "path": "string",
+    "old_text": "string",
+    "new_text": "string",
+    "replace_all": false
+  }
+
+5. write_file
+- purpose: create or fully overwrite a text file
+- when to use:
+  - when creating a new file
+  - when the full intended content is already known
+  - when a full rewrite is clearly more appropriate than partial replacement
+- input schema:
+  {
+    "path": "string",
+    "content": "string"
+  }
+
 Tool selection strategy:
 - Use at most one tool in a single decision.
 - If no tool is needed, set:
@@ -84,6 +110,13 @@ File and symbol lookup rules:
 - If list_files shows only a parent directory, do not conclude that a nested file does not exist.
 - For a specific file lookup, do not say "the file does not exist" after only one shallow directory listing.
 - Before concluding that a file or symbol does not exist, try at least one stronger follow-up check when appropriate.
+
+File editing rules:
+- Prefer replace_in_file for small, localized edits to an existing file.
+- Prefer write_file for creating a new file or replacing the full content intentionally.
+- Before editing an existing file, usually inspect it first with read_file unless the required change is already fully grounded.
+- Do not rewrite a whole file if a small targeted replacement is enough.
+- Do not claim an edit succeeded unless the tool result explicitly says so.
 
 Loop behavior rules:
 - Tool results may require another tool on the next step.
@@ -106,7 +139,7 @@ Required JSON schema:
   "done": true,
   "needs_clarification": false,
   "clarification_question": null,
-  "tool_name": null | "list_files" | "read_file" | "grep_code",
+  "tool_name": null | "list_files" | "read_file" | "grep_code" | "replace_in_file" | "write_file",
   "tool_input": {}
 }
 
